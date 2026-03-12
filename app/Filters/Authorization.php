@@ -9,62 +9,74 @@ use CodeIgniter\Filters\FilterInterface;
 
 class Authorization implements FilterInterface
 {
-    /**
-     * Do whatever processing this filter needs to do.
-     * By default it should not return anything during
-     * normal execution. However, when an abnormal state
-     * is found, it should return an instance of
-     * CodeIgniter\HTTP\Response. If it does, script
-     * execution will end and that Response will be
-     * sent back to the client, allowing for error pages,
-     * redirects, etc.
-     *
-     * @param RequestInterface $request
-     * @param array|null       $arguments
-     *
-     * @return RequestInterface|ResponseInterface|string|void
-     */
-
     protected $ApplicationModel;
+
     public function before(RequestInterface $request, $arguments = null)
     {
-        $uri                     = service('uri');
-        $this->ApplicationModel  = new ApplicationModel();
-        $segment                 = $uri->getSegment(1);
+        $this->ApplicationModel = new ApplicationModel();
+        $uri = service('uri');
+        $role = session()->get('role');
 
-        if ($segment) {
-            $menu         = $this->ApplicationModel->getMenuByUrl($segment);
-            if (!$menu) {
-                //not found
-                return redirect()->to(base_url('/'));
-            } else {
-                $dataAccess = [
-                    'roleID' => session()->get('role'),
-                    'menuID' => $menu['id']
-                ];
-                $userAccess = $this->ApplicationModel->checkUserAccess($dataAccess);
-                if (!$userAccess) {
-                    // not granted
-                    return redirect()->to(base_url('blocked'));
-                }
-            }
+        // Admin always has full access
+        if ($role == 1) {
+            return; // bypass all checks
+        }
+
+        $segment = $uri->getSegment(1);
+        if (!$segment) {
+            return; // no segment, no restriction
+        }
+
+        // Get menu by URL segment
+        $menu = $this->ApplicationModel->getMenuByUrl($segment);
+
+        if (!$menu) {
+            // If no menu found, redirect home
+            return redirect()->to(base_url('/'));
+        }
+
+        // Check menu access first
+        $accessData = [
+            'roleID' => $role,
+            'menuID' => $menu['menu_id'] ?? null,
+            'submenuID' => null,
+            'menuCategoryID' => $menu['menu_category_id'] ?? null
+        ];
+
+        $hasMenuAccess = false;
+
+        // Check category access
+        if (!empty($accessData['menuCategoryID'])) {
+            $hasMenuAccess = $this->ApplicationModel->checkUserMenuCategoryAccess([
+                'roleID' => $role,
+                'menuCategoryID' => $accessData['menuCategoryID']
+            ]) > 0;
+        }
+
+        // Check menu access
+        if (!$hasMenuAccess && !empty($accessData['menuID'])) {
+            $hasMenuAccess = $this->ApplicationModel->checkUserAccess([
+                'roleID' => $role,
+                'menuID' => $accessData['menuID']
+            ]) > 0;
+        }
+
+        // Check submenu access
+        if (!$hasMenuAccess && !empty($accessData['submenuID'])) {
+            $hasMenuAccess = $this->ApplicationModel->checkUserSubmenuAccess([
+                'roleID' => $role,
+                'submenuID' => $accessData['submenuID']
+            ]) > 0;
+        }
+
+        if (!$hasMenuAccess) {
+            // Not granted, redirect to forbidden
+            return redirect()->to(base_url('blocked'));
         }
     }
 
-    /**
-     * Allows After filters to inspect and modify the response
-     * object as needed. This method does not allow any way
-     * to stop execution of other after filters, short of
-     * throwing an Exception or Error.
-     *
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
-     * @param array|null        $arguments
-     *
-     * @return ResponseInterface|void
-     */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        //
+        // Nothing needed here
     }
 }

@@ -1,3 +1,13 @@
+<?php
+use App\Models\ApplicationModel;
+
+$segment = service('uri')->getSegment(1); // current segment
+$user = session()->get('user');          // current logged-in user
+
+$appModel = new ApplicationModel();
+$MenuCategory = $appModel->getAccessMenuCategory($user['role']); // get menu categories for user role
+?>
+
 <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
         <ul class="navbar-nav">
@@ -9,6 +19,7 @@
             <a href="<?= base_url('dashboard') ?>" class="nav-link <?= ($segment == 'dashboard') ? 'active' : '' ?>">Home</a></li>
             <a href="<?= base_url('students') ?>" class="nav-link <?= ($segment == 'students') ? 'active' : '' ?>">Student</a></li>
             <a href="<?= base_url('records') ?>" class="nav-link <?= ($segment == 'records') ? 'active' : '' ?>">Inventory Management</a></li>
+            <a href="<?= base_url('profile') ?>" class="nav-link <?= ($segment == 'profile') ? 'active' : '' ?>">Student Profile</a>
             <li class="nav-item">
         </ul>
         <ul class="navbar-nav ms-auto">
@@ -41,7 +52,7 @@
                         </div>
                     </li>
                     <li class="user-footer">
-                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                        <a href="<?= base_url('profile') ?>" class="btn btn-default btn-flat">Profile</a>
                         <a href="<?= base_url('logout') ?>" class="btn btn-default btn-flat float-end">Sign out</a>
                     </li>
                 </ul>

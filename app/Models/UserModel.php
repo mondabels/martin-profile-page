@@ -10,13 +10,24 @@ class UserModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'fullname',
-        'username',
+        'name',
+        'email',
         'password',
-        'role',
-        'created_at',
-        'updated_at'
+        'student_id',
+        'course',
+        'year_level',
+        'section',
+        'phone',
+        'address',
+        'profile_image',
     ];
 
     protected $useTimestamps = true;
+
+    public function updateProfile(int $userId, array $data): bool
+    {
+        return $this->update($userId, $data);
+    }
+
 }
+

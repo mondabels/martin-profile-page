@@ -1,3 +1,13 @@
+<?php
+use App\Models\ApplicationModel;
+
+$segment = service('uri')->getSegment(1); // current segment
+$user = session()->get('user');          // current logged-in user
+
+$appModel = new ApplicationModel();
+$MenuCategory = $appModel->getAccessMenuCategory($user['role']); // get menu categories for user role
+?>
+
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="<?= base_url() ?>" class="brand-link">
@@ -57,7 +67,15 @@
                 </li>
                 </li>
 
-                <?php foreach ($MenuCategory as $mCategory): ?>
+                <li class="nav-item">
+                    <a href="<?= base_url('profile') ?>"
+                        class="nav-link <?= ($segment == 'profile') ? 'active' : '' ?>">
+                        <i class="nav-icon bi bi-person"></i>
+                        <p>Student Profile</p>
+                    </a>
+                </li>
+
+                <?php /*foreach ($MenuCategory as $mCategory): ?>
                     <?php if ($mCategory['menu_category'] != 'Common Page'): ?>
                         <li class="nav-header"><?= $mCategory['menu_category'] ?></li>
                     <?php endif; ?>
@@ -65,19 +83,21 @@
                     <?php
                     $Menu = getMenu($mCategory['menuCategoryID'], $user['role']);
                     foreach ($Menu as $menu):
-                        if ($menu['title'] == 'Dashboard' || $menu['title'] == 'Records') continue; // skip duplicates
+                        if ($menu['title'] == 'Dashboard' || $menu['title'] == 'Records')
+                            continue; // skip duplicates
                         if ($menu['parent'] == 0):
-                    ?>
+                            ?>
                             <li class="nav-item">
-                                <a href="<?= base_url($menu['url']) ?>" class="nav-link <?= ($segment == $menu['url']) ? 'active' : '' ?>">
+                                <a href="<?= base_url($menu['url']) ?>"
+                                    class="nav-link <?= ($segment == $menu['url']) ? 'active' : '' ?>">
                                     <i class="nav-icon bi bi-<?= $menu['icon'] ?>"></i>
                                     <p><?= $menu['title'] ?></p>
                                 </a>
                             </li>
-                    <?php
+                            <?php
                         else:
                             $SubMenu = getSubMenu($menu['menu_id'], $user['role']);
-                    ?>
+                            ?>
                             <li class="nav-item <?= ($segment == $menu['url']) ? 'menu-open' : '' ?>">
                                 <a href="#" class="nav-link <?= ($segment == $menu['url']) ? 'active' : '' ?>">
                                     <i class="nav-icon bi bi-<?= $menu['icon'] ?>"></i>
@@ -87,7 +107,7 @@
                                     <?php foreach ($SubMenu as $subMenu): ?>
                                         <li class="nav-item">
                                             <a href="<?= base_url($menu['url'] . '/' . $subMenu['url']) ?>"
-                                               class="nav-link <?= ($subsegment == $subMenu['url']) ? 'active' : '' ?>">
+                                                class="nav-link <?= ($subsegment == $subMenu['url']) ? 'active' : '' ?>">
                                                 <i class="nav-icon bi bi-circle"></i>
                                                 <p><?= $subMenu['title'] ?></p>
                                             </a>
@@ -95,11 +115,11 @@
                                     <?php endforeach; ?>
                                 </ul>
                             </li>
-                    <?php
+                            <?php
                         endif;
                     endforeach;
                     ?>
-                <?php endforeach; ?>
+                <?php endforeach; */?>
 
             </ul>
         </nav>

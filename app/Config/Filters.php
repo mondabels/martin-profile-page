@@ -27,17 +27,17 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
+        'csrf' => CSRF::class,
+        'toolbar' => DebugToolbar::class,
+        'honeypot' => Honeypot::class,
+        'invalidchars' => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
-        'isLoggedIn'    => Authentication::class,
-        'isGranted'     => Authorization::class,
+        'cors' => Cors::class,
+        'forcehttps' => ForceHTTPS::class,
+        'pagecache' => PageCache::class,
+        'performance' => PerformanceMetrics::class,
+        'isLoggedIn' => Authentication::class,
+        'isGranted' => Authorization::class,
     ];
 
     /**
@@ -71,19 +71,21 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, array<string, string>>>|array<string, list<string>>
      */
-    public array $globals = [
-        'before' => [
-            'isLoggedIn' => ['except' => ['/', 'register', 'login']],
-            'isGranted'  => ['except' => ['/', 'register', 'login', 'logout', 'blocked', 'dashboard', 'dashboard-v2', 'dashboard-v3', 'students', 'students/*']],
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
-    ];
+public array $globals = [
+    'before' => [
+        'isLoggedIn' => ['except' => ['/', 'login', 'register', 'logout', 'blocked']],
+        'isGranted'  => ['except' => [
+            '/', 'login', 'register', 'logout', 'blocked',
+            'dashboard', 'dashboard-v2', 'dashboard-v3',
+            'students', 'students/*',
+            'profile', 'profile/*',    
+            'records', 'records/*',    
+        ]],
+    ],
+    'after' => [
+        
+    ],
+];
 
     /**
      * List of filter aliases that works on a

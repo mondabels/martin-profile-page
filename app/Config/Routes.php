@@ -13,21 +13,29 @@ $routes->get('blocked', 'Auth::forbiddenPage');
 $routes->get('register', 'Auth::register');
 $routes->post('register', 'Auth::registration');
 
-$routes->get('dashboard', 'Home::index');
-$routes->get('dashboard-v2', 'Home::dashboardV2');
-$routes->get('dashboard-v3', 'Home::dashboardV3');
+$routes->group('', ['filter' => 'isLoggedIn'], function ($routes) {
 
-$routes->get('students', 'StudentInfo::index');  
-$routes->post('students/store', 'StudentInfo::store');       
-$routes->post('students/delete/(:num)', 'StudentInfo::delete/$1');
+    $routes->get('dashboard', 'Home::index');
+    $routes->get('dashboard-v2', 'Home::dashboardV2');
+    $routes->get('dashboard-v3', 'Home::dashboardV3');
 
-$routes->get('records', 'Records::index');
-$routes->get('records/create', 'Records::create');
-$routes->post('records/store', 'Records::store');
-$routes->get('records/(:num)', 'Records::show/$1');
-$routes->get('records/edit/(:num)', 'Records::edit/$1');
-$routes->post('records/update/(:num)', 'Records::update/$1');
-$routes->post('records/delete/(:num)', 'Records::delete/$1');
+    $routes->get('students', 'StudentInfo::index');
+    $routes->post('students/store', 'StudentInfo::store');
+    $routes->post('students/delete/(:num)', 'StudentInfo::delete/$1');
+
+    $routes->get('records', 'Records::index');
+    $routes->get('records/create', 'Records::create');
+    $routes->post('records/store', 'Records::store');
+    $routes->get('records/(:num)', 'Records::show/$1');
+    $routes->get('records/edit/(:num)', 'Records::edit/$1');
+    $routes->post('records/update/(:num)', 'Records::update/$1');
+    $routes->post('records/delete/(:num)', 'Records::delete/$1');
+
+    $routes->get('profile', 'ProfileController::show');
+    $routes->get('profile/edit', 'ProfileController::edit');
+    $routes->post('profile/update', 'ProfileController::update');
+
+});
 
 // Setting Routes
 $routes->group('users', static function ($routes) {
@@ -52,4 +60,4 @@ $routes->group('menu-management', static function ($routes) {
     $routes->post('create-menu', 'Settings::createMenu');
     $routes->post('create-submenu', 'Settings::createSubMenu');
 });
-$routes->get('menu','Menu::index');
+$routes->get('menu', 'Menu::index');
